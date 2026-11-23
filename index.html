@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDSF.Com | Premium Account</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:linear-gradient(145deg,#061326,#102c50,#061326);
+ color:white;
+ min-height:100vh;
+ padding:20px;
+}
+.container{max-width:440px;margin:auto}
+.logo{text-align:center;padding:25px}
+.logo h1{letter-spacing:4px;color:#58c5ff;font-size:32px}
+.logo p{color:#9db4ce;font-size:12px}
+.card{
+ background:rgba(255,255,255,.07);
+ border:1px solid rgba(255,255,255,.13);
+ border-radius:20px;
+ padding:22px;margin-bottom:17px;
+ box-shadow:0 12px 35px #0005;
+}
+h2{font-size:20px}
+input{
+ width:100%;padding:14px;margin:8px 0;
+ border:1px solid #315477;border-radius:10px;
+ background:#0b1d34;color:white;font-size:15px;
+}
+button{
+ width:100%;padding:14px;border:0;
+ border-radius:10px;background:#168bd0;
+ color:white;font-weight:bold;font-size:15px;
+ margin-top:10px;
+}
+.secondary{background:#263e5c}
+.hidden{display:none}
+.balance{
+ font-size:32px;color:#59caff;
+ font-weight:bold;margin:15px 0;
+}
+.small{font-size:12px;color:#9db4ce}
+.item{
+ padding:13px 0;border-bottom:1px solid #ffffff18;
+ display:flex;justify-content:space-between;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="logo">
+<h1>MDSF</h1>
+<p>PREMIUM ACCOUNT MANAGEMENT</p>
+</div>
+
+<div class="card" id="auth">
+<h2 id="formTitle">Welcome Back</h2>
+<input id="name" class="hidden" placeholder="Your Full Name">
+<input id="email" type="email" placeholder="Email Address">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button class="secondary" onclick="register()">Create Account</button>
+<p class="small">MDSF.COM • Powered by Mobile Kari</p>
+</div>
+
+<div id="dashboard" class="hidden">
+<div class="card">
+<p class="small">WELCOME TO MDSF</p>
+<h2 id="userName">User</h2>
+<p class="small">● ACTIVE ACCOUNT</p>
+</div>
+
+<div class="card">
+<p class="small">AVAILABLE BALANCE (DEMO)</p>
+<div class="balance" id="balance">৳5,000.00</div>
+<p class="small">Bangladesh Taka (BDT)</p>
+</div>
+
+<div class="card">
+<h2>Account Services</h2>
+<button onclick="cashIn()">Cash In (Demo)</button>
+<button class="secondary" onclick="cashOut()">Cash Out (Demo)</button>
+</div>
+
+<div class="card">
+<h2>Transaction History</h2>
+<div id="history"><p class="small">No transactions yet.</p></div>
+</div>
+
+<button class="secondary" onclick="logout()">Logout</button>
+</div>
+
+<p class="small" style="text-align:center">
+MDSF.COM © 2026 | Demo Version
+</p>
+</div>
+
+<script>
+let balance=5000;
+let transactions=[];
+
+function register(){
+ let name=document.getElementById('name').value.trim();
+ let email=document.getElementById('email').value.trim();
+ let password=document.getElementById('password').value;
+ if(!name||!email||password.length<6){
+ alert('Enter name, email and password (minimum 6 characters).');
+ return;
+ }
+ let users=JSON.parse(localStorage.getItem('mdsfUsers')||'{}');
+ if(users[email]){
+ alert('Account already exists. Please login.');
+ return;
+ }
+ users[email]={name,password};
+ localStorage.setItem('mdsfUsers',JSON.stringify(users));
+ alert('Demo account created! Now login.');
+}
+
+function login(){
+ let email=document.getElementById('email').value.trim();
+ let password=document.getElementById('password').value;
+ let users=JSON.parse(localStorage.getItem('mdsfUsers')||'{}');
+ if(!users[email]||users[email].password!==password){
+ alert('Incorrect email or password.');
+ return;
+ }
+ document.getElementById('userName').textContent=users[email].name;
+ document.getElementById('auth').classList.add('hidden');
+ document.getElementById('dashboard').classList.remove('hidden');
+}
+
+function update(){
+ document.getElementById('balance').textContent=
+ '৳'+balance.toLocaleString('en-US',{minimumFractionDigits:2});
+ document.getElementById('history').innerHTML=
+ transactions.length?transactions.map(t=>
+ '<div class="item"><span>'+t.type+
+ '</span><b>'+t.amount+'</b></div>').join(''):
+ '<p class="small">No transactions yet.</p>';
+}
+
+function cashIn(){
+ let amount=Number(prompt('Enter demo Cash In amount'));
+ if(!Number.isFinite(amount)||amount<=0)return;
+ balance+=amount;
+ transactions.unshift({type:'Cash In',amount:'+৳'+amount});
+ update();
+}
+
+function cashOut(){
+ let amount=Number(prompt('Enter demo Cash Out amount'));
+ if(!Number.isFinite(amount)||amount<=0||amount>balance){
+ alert('Invalid amount or insufficient demo balance.');
+ return;
+ }
+ balance-=amount;
+ transactions.unshift({type:'Cash Out',amount:'-৳'+amount});
+ update();
+}
+
+function logout(){
+ document.getElementById('dashboard').classList.add('hidden');
+ document.getElementById('auth').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
